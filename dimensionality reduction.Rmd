@@ -1,0 +1,23 @@
+```{r}
+#加载安装包
+library(Seurat)
+library(dplyr)
+library(tidyverse)
+#加载数据
+scRNA <- readRDS("forced loss/scRNA.rds")
+#降维
+scRNA <- ScaleData(scRNA, features = (rownames(scRNA)))
+scRNA <- RunPCA(scRNA, features = VariableFeatures(scRNA),seed.use=3)
+DimPlot(scRNA, reduction = "pca", group.by="stim")
+scRNA <- JackStraw(scRNA,reduction = "pca", dims=50)
+scRNA <- ScoreJackStraw(scRNA,dims = 1:50)
+ElbowPlot(scRNA, ndims=20, reduction="pca")
+JackStrawPlot(scRNA, dims = 1:20)
+#聚类
+data <- FindNeighbors(scRNA, dims = 1:30) %>% 
+	RunUMAP(dims = 1:10) %>% 
+	FindClusters(resolution = 0.8)
+#save
+saveRDS(data,file = "snRNA1.rds")
+```
+

@@ -1,0 +1,13 @@
+```{r}
+#加载安装包
+library(dplyr)
+library(openxlsx)
+library(Seurat)
+#加载数据
+data <- readRDS("forced loss/scRNA1.rds")
+#分离Int
+Idents(data) = data$Celltype
+Int <- SplitObject(object, split.by = "ident")[["Int"]]
+saveRDS(Int, "Int.subset.rds")
+```
+

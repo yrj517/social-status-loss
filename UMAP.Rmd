@@ -1,0 +1,25 @@
+```{r}
+#加载安装包
+library(dplyr)
+library(Seurat)
+library(ggsci)
+library(cowplot)
+library(RColorBrewer)
+library(ggplot2)
+library(tidyr)
+library(openxlsx)
+#加载数据
+data1 <- readRDS("forced loss/scRNA1.rds")
+#绘图
+plot1 <- UMAPPlot(data1, label = T, pt.size = 1)
+plot_grid(plot1)
+ggsave("./cluster.png",width = 8,height = 8)
+#注释细胞型
+meta = data1@meta.data
+meta.1 = meta %>% mutate(celltype = case_when(seurat_clusters%in% c("Cluster")~"celltype"))
+data1@meta.data = meta.1
+Idents(data1)=data1$celltype
+#绘图
+UMAPPlot(data1, reduction = 'umap', label = TRUE, pt.size = 1,label.size=6)
+ggsave("forced loss/Celltype.pdf", width = 8, height = 8)
+```

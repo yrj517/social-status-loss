@@ -1,0 +1,19 @@
+```{r}
+#加载安装包
+library("clusterProfiler")
+library("org.Mm.eg.db")
+library("Seurat")
+library("AnnotationDbi")
+library("enrichplot")
+library("dplyr")
+library("ggplot2")
+#加载数据
+rt=read.csv("forced loss/genes.csv",sep="\t",check.names=F,header=T) 
+gene = bitr(rt$Symbol,fromType="Symbol",toType="ENTREZID")                  
+gene1 =gene$ENTREZID
+#GO富集
+ego_BP <- enrichGO(gene = gene1,keyType = "ENTREZID", ont = "BP", minGSSize = 1, qvalueCutoff = 1, pvalueCutoff=1, readable = TRUE)
+ego_result_BP <- as.data.frame(ego_BP)
+write.csv(ego_result_BP,"forced loss/genes.result.csv",row.names=TRUE)
+```
+

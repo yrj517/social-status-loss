@@ -1,0 +1,27 @@
+```{r}
+#加载安装包
+library(Seurat)
+library(dplyr)
+library(tidyverse)
+#导入数据
+samples=list.files("GSE2024/")
+samples
+dir <- file.path('./GSE2024',samples)
+names(dir) <- samples
+#构建rds对象
+counts <- Read10X(scRNA.Rdata.dir = dir)
+scRNA = CreateSeuratObject(counts, min.cells = 5, min.features = 200)
+#数据质控
+scRNA[["percent.mt"]] <- PercentageFeatureSet(scRNA, pattern = "^mt-")
+pctMT = 5
+scRNA <- subset(scRNA, subset = percent.mt < pctMT)
+VlnPlot(scRNA, features = c("nFeature_RNA", "nCount_RNA", "percent.mt"), ncol = 5, pt.size=0.05)
+#可变基因标记
+scRNA <- FindVariableFeatures(scRNA, selection.method = "vst", nfeatures = 2000) 
+top10 <- head(VariableFeatures(scRNA), 10) 
+top10
+plot <- VariableFeaturePlot(snRNA)
+#save
+saveRDS(scRNA,file = "forced loss/scRNA.rds")
+```
+

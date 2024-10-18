@@ -1,0 +1,15 @@
+```{r}
+#加载安装包
+library(Seurat)
+library(dplyr)
+library(ggplot2)
+#加载数据
+data1 <- readRDS("forced loss/scRNA1.rds")
+markers = read.delim("forced loss/marker.txt", header = F)$V1
+order = read.delim("forced loss/order.txt", header = F)$V1
+Idents(data1) <- factor(Idents(data1), levels = order)
+#绘图
+DotPlot(data1, features = markers, theme(panel.grid = element_blank(), axis.text.x=element_text(hjust =1)))
+ggsave("forced loss/marker气泡图.pdf", width = 10, height = 7)
+```
+

@@ -1,0 +1,28 @@
+```{r}
+#加载安装包
+library(Seurat)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+library(RColorBrewer)
+#导入数据
+scRNA.int = readRDS("Int.subset.rds")
+scRNA.int <- ScaleData(scRNA.int)
+scRNA.int <- RunPCA(scRNA.int, features = VariableFeatures(object = scRNA.int))
+scRNA.int <- FindNeighbors(scRNA.int, dims = 1:30) %>% 
+	RunUMAP(dims = 1:10) %>% 
+	FindClusters(resolution = 0.5)
+#FindAllMarkers
+scRNA.int.markers <- FindAllMarkers(scRNA.int, only.pos = TRUE)
+top10 <- scRNA.int.markers %>% group_by(cluster) %>% top_n(n = 10, wt = avg_log2FC) 
+#画图
+UMAPPlot(scRNA.int,label=T)
+ggsave("forced loss/clusters1.png",width = 8,height = 8)
+meta = scRNA.int@meta.data
+meta.1 = meta %>% mutate(celltype = case_when(seurat_clusters%in% c("Cluster")~"Celltype"))
+scRNA.int@meta.data = meta.1
+Idents(scRNA.int)=scRNA.int$celltype
+UMAPPlot(scRNA.int, reduction = 'umap', label = TRUE, pt.size = 1, cols = cols,label.size=5)
+ggsave("forced loss/celltype1.png", width = 8, height = 8)
+```
+
